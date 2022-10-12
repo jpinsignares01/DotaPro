@@ -32,3 +32,36 @@ $ docker exec -it dotapro_home bash
 $ service apache2 start
 
 ```
+
+# Instalación de dependencias
+```sh
+# Configuración recomendada
+$ nano /etc/php/7.4/apache2/php.ini
+    post_max_size = 250M
+    upload_max_filesize = 250M
+    memory_limit = 4096M
+    max_execution_time = 600
+
+# Ingresamos al directorio de proyecto
+$ cd var/www
+
+# Instalamos las dependencias
+$ composer install
+$ npm install
+
+# Generamos un nuevo APP_KEY para la aplicación
+$ php artisan key:generate
+
+# Damos los permisos para los directorios
+$ chmod 777 bootstrap/cache
+$ chmod 777 node_modules
+$ chmod 777 html
+$ chmod 777 public
+$ chmod 777 public/css
+$ chmod 777 public/js
+$ chmod 777 -R storage
+$ chown -R www-data\: storage bootstrap/cache
+
+# Ejecutamos las migraciones
+$ php artisan migrate
+```
