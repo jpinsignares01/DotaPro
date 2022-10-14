@@ -15,10 +15,11 @@ class CreateTableDispositivos extends Migration
     {
         Schema::create('dispositivos', function (Blueprint $table) {
             $table->id();
-            $table->integer('serial');
+            $table->integer('serial')->unique();
             $table->string('nombre');
             $table->string('tipo_dispositivo');
             $table->string('sistema_operativo')->nullable();
+            $table->foreignId('personas_id')->references('id')->on('personas')->onDelete('cascade');
             //
             $table->softDeletes();
             $table->timestamps();

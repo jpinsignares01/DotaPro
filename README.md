@@ -62,6 +62,26 @@ $ chmod 777 public/js
 $ chmod 777 -R storage
 $ chown -R www-data\: storage bootstrap/cache
 
-# Ejecutamos las migraciones
-$ php artisan migrate
+# Ejecutamos las migraciones y seeder
+$ php artisan migrate --seed
+```
+
+# Configuración Apache2
+```sh
+# Ejecutamos el servidor apache2
+$ service apache2 start
+$ a2enmod rewrite
+$ service apache2 restart
+
+# Configuramos el viertualhost
+$ nano /etc/apache2/sites-available/000-default.conf
+
+# Debajo de DocumentRoot /var/www/html agregamos las siguientes lineas
+<Directory /var/www/html>
+    Options Indexes FollowSymLinks
+    AllowOverride All
+    Require all granted
+</Directory>
+
+$ service apache2 restart
 ```

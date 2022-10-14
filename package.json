@@ -24,7 +24,10 @@
         "vue-template-compiler": "^2.6.12"
     },
     "dependencies": {
+        "bootstrap-icons": "^1.9.1",
         "bootstrap-vue": "^2.22.0",
-        "moment": "^2.29.4"
+        "moment": "^2.29.4",
+        "vue-multiselect": "^2.1.6",
+        "vue-sweetalert2": "^5.0.5"
     }
 }
