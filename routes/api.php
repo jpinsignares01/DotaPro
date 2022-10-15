@@ -26,7 +26,8 @@ Route::group([
     Route::group([
         'prefix' => 'dispositivos'
     ], function (){
-        Route::post('/', [DispositivosApiController::class, 'index'])->name('api.index_dispositivo');
+        Route::get('/{personas_id}', [DispositivosApiController::class, 'index'])->name('api.index_dispositivo');
+        Route::post('/desvincular', [DispositivosApiController::class, 'desvincular'])->name('api.desvincular_dispositivo');
         Route::post('/asignar', [DispositivosApiController::class, 'asignar'])->name('api.asignar_dispositivo');
     });
 });

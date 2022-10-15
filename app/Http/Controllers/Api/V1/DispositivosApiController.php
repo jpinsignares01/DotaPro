@@ -26,9 +26,10 @@ class DispositivosApiController extends Controller
         try {
             foreach ($dispositivos as $key => $dispositivo) {
                 if (array_search($dispositivo->id, $dispositivosAsignadosGeneral) !== false) unset($dispositivos[$key]);
+                $dispositivo->serial = $dispositivo->id;
             }
         } catch (Exception $e) {
-            return response('Error: Se ha presentado un error solicitando el listado de dispositivos disponibles.', 400);
+            return response('Se ha presentado un error solicitando el listado de dispositivos disponibles. Error: ' . $e->getMessage(), 400);
         }
         //
         $response = [
@@ -53,7 +54,7 @@ class DispositivosApiController extends Controller
             $nuevoDispositivo = new Dispositivo;
             $nuevoDispositivo->serial = $request->dispositivo['id'];
             $nuevoDispositivo->nombre = $request->dispositivo['nombre'];
-            $nuevoDispositivo->tipo_dispositivo = $request->dispositivo['tipo'];
+            $nuevoDispositivo->tipo_dispositivo = $request->dispositivo['tipo_dispositivo'];
             $nuevoDispositivo->sistema_operativo = $request->dispositivo['sistema_operativo'];
             $nuevoDispositivo->personas_id = $request->personas_id;
             $nuevoDispositivo->save();
@@ -64,6 +65,21 @@ class DispositivosApiController extends Controller
             'data' => [
                 "dispositivo_asignado" => $nuevoDispositivo,
             ],
+        ];
+        //
+        return json_decode(json_encode($response), true);
+    }
+
+    /* 
+    * Desvincular el dispositivo a persona
+    */
+    public function desvincular(Request $request)
+    {
+        $dispositivo = Dispositivo::where('serial', $request->dispositivos_id)->where('personas_id', $request->personas_id)->first()->delete();
+        //
+        $response = [
+            'code' => 201,
+            'data' => "Se ha desvinculado el dispositivo.",
         ];
         //
         return json_decode(json_encode($response), true);

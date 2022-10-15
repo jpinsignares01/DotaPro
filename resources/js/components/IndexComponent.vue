@@ -84,7 +84,7 @@
                                         <td>{{dispositivo.sistema_operativo || 'N.A.'}}</td>
                                         <td>{{dispositivo.created_at | date_format}}</td>
                                         <td class="align-middle">
-                                            <button class="btn text-danger p-0" @click="eliminarDispositivo(dispositivo.id)"><b-icon icon="trash"></b-icon></button>
+                                            <button class="btn text-danger p-0" @click="desvincularDispositivo(dispositivo.serial)"><b-icon icon="trash"></b-icon></button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -183,7 +183,7 @@
                 .then(function (response) {
                     me.getPersonas();
                     me.dispositivosPersona.push(response.data.data.dispositivo_asignado);
-                    me.dispositivosInventario = me.dispositivosInventario.filter(el => el.id !== response.data.data.dispositivo_asignado.serial);
+                    me.dispositivosInventario = me.dispositivosInventario.filter(el => el.serial !== response.data.data.dispositivo_asignado.serial);
                 })
                 .then(function () {
                     me.isModalProcessing = false;
@@ -209,8 +209,50 @@
                     });
                 });
             },
-            eliminarDispositivo(idDispositivo) {
-                console.log(idDispositivo);
+            desvincularDispositivo(idDispositivo) {
+                if (confirm('¿Está seguro de desvincular este dispositivo?')) {
+                    let me = this;
+                    me.isModalProcessing = true;
+                    //
+                    const headers = {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                    let url = '/api/v1/dispositivos/desvincular';
+                    axios.post(url, {
+                        personas_id: me.personaModal.id,
+                        dispositivos_id: idDispositivo,
+                    }, {
+                        headers: headers
+                    })
+                    .then(function (response) {
+                        me.getPersonas();
+                        me.dispositivosInventario.push(me.dispositivosPersona.find(el => el.serial == idDispositivo));
+                        me.dispositivosPersona = me.dispositivosPersona.filter(el => el.serial !== idDispositivo);
+                        me.isModalProcessing = false;
+                        me.dispositivoModal = null;
+                        //
+                        me.$swal.fire({
+                            title: 'Éxito',
+                            icon: "Se ha desvinculado el dispositivo.",
+                            icon: 'success',
+                            showCancelButton: false,
+                            showDenyButton: false,
+                            confirmButtonText: 'Ok',
+                        });
+                    })
+                    .catch((error) => {
+                        me.isModalProcessing = false;
+                        me.$swal.fire({
+                            title: 'Hubo un problema al desvincular el dispositivo',
+                            text: error.response,
+                            icon: 'error',
+                            showCancelButton: false,
+                            showDenyButton: false,
+                            confirmButtonText: 'Ok',
+                        });
+                    });
+                }
             },
             getDispositivosModal(personas_id) {
                 let me = this;
@@ -218,10 +260,8 @@
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 }
-                let url = '/api/v1/dispositivos';
-                axios.post(url, {
-                    personas_id: personas_id
-                }, {
+                let url = '/api/v1/dispositivos/'+personas_id;
+                axios.get(url, {
                     headers: headers
                 })
                 .then(function (response) {
@@ -249,8 +289,8 @@
                     console.log(error);
                 });
             },
-            dispositivoYTipo ({ nombre, tipo }) {
-                return `${nombre} - (${tipo})`
+            dispositivoYTipo ({ nombre, tipo_dispositivo }) {
+                return `${nombre} - (${tipo_dispositivo})`
             },
         },
     }
