@@ -19,7 +19,7 @@ Crear contenedores Docker
 $ docker run -d -p 33061:3306 --name mysql_home -e MYSQL_ROOT_PASSWORD=secret mysql
 $ docker exec -it mysql_home bash
 $ mysql -u root -p
-    create schema matrizriesgo;
+    create schema dotapro;
 ```
 
 ```sh
