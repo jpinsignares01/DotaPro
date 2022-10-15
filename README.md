@@ -65,18 +65,6 @@ $ chown -R www-data\: storage bootstrap/cache
 
 # Ejecutamos las migraciones y seeder
 $ php artisan migrate --seed
-
-# Correr testing:
-$ php artisan test
-
-## Respuesta testing:
-   PASS  Tests\Feature\AsignacionDispositivoTest
-  ✓ vinculacion
-  ✓ desvinculacion
-
-  Tests:  2 passed
-  Time:   4.16s
-
 ```
 
 # Configuración Apache2
@@ -99,7 +87,22 @@ $ nano /etc/apache2/sites-available/000-default.conf
 $ service apache2 restart
 ```
 
-## EndPoints
+# Testing PHPUnit
+```sh
+# Correr testing:
+$ php artisan test
+
+## Respuesta testing:
+   PASS  Tests\Feature\AsignacionDispositivoTest
+  ✓ vinculacion
+  ✓ desvinculacion
+
+  Tests:  2 passed
+  Time:   4.16s
+
+```
+
+# EndPoints
 
 ### Obtener listado de empleados
 #### Url:
