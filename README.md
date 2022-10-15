@@ -6,9 +6,9 @@ DotaPro requiere [PHP](https://www.php.net/downloads.php#v7.4.19) 7.4 + y [nodej
 
 Clonar Repositorio
 ```sh
-$ git clone https://bitbucket.org/jgromero7/riskscoring.git
+$ git clone https://github.com/jpinsignares01/DotaPro.git
 
-$ cd riskscoring
+$ cd dotapro
 ```
 
 # Despliegue - Desarrollo
