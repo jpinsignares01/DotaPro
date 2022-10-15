@@ -27,5 +27,6 @@ Route::group([
         'prefix' => 'dispositivos'
     ], function (){
         Route::post('/', [DispositivosApiController::class, 'index'])->name('api.index_dispositivo');
+        Route::post('/asignar', [DispositivosApiController::class, 'asignar'])->name('api.asignar_dispositivo');
     });
 });

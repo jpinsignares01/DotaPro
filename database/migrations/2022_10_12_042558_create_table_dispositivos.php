@@ -15,7 +15,7 @@ class CreateTableDispositivos extends Migration
     {
         Schema::create('dispositivos', function (Blueprint $table) {
             $table->id();
-            $table->integer('serial')->unique();
+            $table->integer('serial');
             $table->string('nombre');
             $table->string('tipo_dispositivo');
             $table->string('sistema_operativo')->nullable();

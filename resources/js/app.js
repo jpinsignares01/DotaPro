@@ -12,6 +12,8 @@ window.Vue = require('vue').default;
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import Multiselect from 'vue-multiselect';
 import VueSweetalert2 from 'vue-sweetalert2';
+import moment from 'moment';
+import 'moment/locale/es'
 
 
 // Importar Estilos
@@ -21,7 +23,7 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 // Inicializamos plugin
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
-Vue.use(VueSweetalert2);
+Vue.use(VueSweetalert2)
 
 /**
  * The following block of code may be used to automatically register your
@@ -38,6 +40,12 @@ Vue.use(VueSweetalert2);
 Vue.component('multiselect', Multiselect);
 //
 Vue.component('index-component', require('./components/IndexComponent.vue').default);
+
+//Date filer
+moment.locale('es');
+Vue.filter('date_format', function (value) {
+    return moment(value).format('DD/MM/YYYY');
+})
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

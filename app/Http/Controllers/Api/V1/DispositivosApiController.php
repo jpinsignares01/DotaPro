@@ -43,12 +43,29 @@ class DispositivosApiController extends Controller
     }
 
     /* 
-    * Validar si el dispositivo está disponible para asignarse
+    * Asignar el dispositivo a persona
     */
-    public function busqueda(Request $request)
+    public function asignar(Request $request)
     {
-        $dispositivo = Dispositivo::with('persona')->where('serial', $request->dispositivo['id'])->first();
+        if (Dispositivo::where('serial', $request->dispositivo['id'])->first()) {
+            return response('El dispositivo ya se encuentra asignado.', 400);
+        } else {
+            $nuevoDispositivo = new Dispositivo;
+            $nuevoDispositivo->serial = $request->dispositivo['id'];
+            $nuevoDispositivo->nombre = $request->dispositivo['nombre'];
+            $nuevoDispositivo->tipo_dispositivo = $request->dispositivo['tipo'];
+            $nuevoDispositivo->sistema_operativo = $request->dispositivo['sistema_operativo'];
+            $nuevoDispositivo->personas_id = $request->personas_id;
+            $nuevoDispositivo->save();
+        }
         //
-        return ($dispositivo ?? false);
+        $response = [
+            'code' => 201,
+            'data' => [
+                "dispositivo_asignado" => $nuevoDispositivo,
+            ],
+        ];
+        //
+        return json_decode(json_encode($response), true);
     }
 }

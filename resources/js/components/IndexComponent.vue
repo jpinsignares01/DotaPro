@@ -39,7 +39,7 @@
                     <div v-if="isModalProcessing || !showModal" class="text-center">
                         <b-spinner size="sm"></b-spinner>
                     </div>
-                    <div v-else class="d-block">
+                    <div v-else class="d-block p-4">
                         <div class="col-md-12 mb-3">
                             <h4 class="text-center">Asignación de dispositivos a <span class="app-title">{{personaModal.nombre}}</span></h4>
                         </div>
@@ -65,12 +65,33 @@
                                 </b-col>
                             </b-row>
                         </b-col>
-                        <b-col :cols="12" v-if="isSearchProcessing" class="text-center mt-3">
-                            <b-spinner size="sm"></b-spinner>
-                        </b-col>
-                        
-                        <b-col v-if="!dispositivoModalValidoAsignar && dispositivoModalValidoAsignar !== null" :cols="12">
-                            <p class="text-danger">{{mensajeBusqueda}}</p>
+                        <b-col class="mt-5" :cols="12">
+                            <h5>Dipositivos asignados:</h5>
+                            <table v-if="dispositivosPersona.length > 0" class="mt-4 w-100">
+                                <thead>
+                                    <tr>
+                                        <th>Dispositivo</th>
+                                        <th>Tipo</th>
+                                        <th>Sistema operativo</th>
+                                        <th>Asignado</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(dispositivo, index) in dispositivosPersona" :key="index">
+                                        <td>{{dispositivo.nombre}}</td>
+                                        <td>{{dispositivo.tipo_dispositivo}}</td>
+                                        <td>{{dispositivo.sistema_operativo || 'N.A.'}}</td>
+                                        <td>{{dispositivo.created_at | date_format}}</td>
+                                        <td class="align-middle">
+                                            <button class="btn text-danger p-0" @click="eliminarDispositivo(dispositivo.id)"><b-icon icon="trash"></b-icon></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div v-else>
+                                <h4>No hay dispositivos asignados.</h4>
+                            </div>
                         </b-col>
                         <div class="mt-5 col-md-12">
                             <div class="row justify-content-end">
@@ -98,8 +119,6 @@
                 showModal: false,
                 personaModal: null,
                 dispositivoModal: null,
-                dispositivoModalValidoAsignar: null,
-                mensajeBusqueda: '',
                 dispositivosInventario: [],
                 dispositivosPersona: [],
                 isModalProcessing: false,
@@ -139,26 +158,73 @@
                 this.dispositivosInventario = [];
                 this.dispositivosPersona = [];
                 this.dispositivoModal = null;
-                this.mensajeBusqueda = '';
-                this.dispositivoModalValidoAsignar = null;
                 //
+                this.personaModal = persona;
+                this.showModal = true;
+                this.isModalProcessing = true;
+                //
+                this.getDispositivosModal(this.personaModal.id);
+            },
+            asignarDispositivo() {
                 let me = this;
-                me.personaModal = persona;
-                me.showModal = true;
                 me.isModalProcessing = true;
                 //
                 const headers = {
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 }
-                let url = '/api/v1/dispositivos';
+                let url = '/api/v1/dispositivos/asignar';
                 axios.post(url, {
-                    personas_id: me.personaModal.id
+                    personas_id: me.personaModal.id,
+                    dispositivo: me.dispositivoModal,
                 }, {
                     headers: headers
                 })
                 .then(function (response) {
-                    console.log(response.data.data);
+                    me.getPersonas();
+                    me.dispositivosPersona.push(response.data.data.dispositivo_asignado);
+                    me.dispositivosInventario = me.dispositivosInventario.filter(el => el.id !== response.data.data.dispositivo_asignado.serial);
+                })
+                .then(function () {
+                    me.isModalProcessing = false;
+                    me.dispositivoModal = null;
+                    //
+                    me.$swal.fire({
+                        title: 'Asignado',
+                        icon: 'success',
+                        showCancelButton: false,
+                        showDenyButton: false,
+                        confirmButtonText: 'Ok',
+                    });
+                })
+                .catch((error) => {
+                    me.isModalProcessing = false;
+                    me.$swal.fire({
+                        title: 'Hubo un problema al asignar el dispositivo',
+                        text: error.response.data,
+                        icon: 'error',
+                        showCancelButton: false,
+                        showDenyButton: false,
+                        confirmButtonText: 'Ok',
+                    });
+                });
+            },
+            eliminarDispositivo(idDispositivo) {
+                console.log(idDispositivo);
+            },
+            getDispositivosModal(personas_id) {
+                let me = this;
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+                let url = '/api/v1/dispositivos';
+                axios.post(url, {
+                    personas_id: personas_id
+                }, {
+                    headers: headers
+                })
+                .then(function (response) {
                     let no_asignados = Object.values(response.data.data.no_asignados);
                     let asignados = Object.values(response.data.data.asignados);
                     if(no_asignados.length > 0) {
