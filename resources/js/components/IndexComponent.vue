@@ -143,6 +143,7 @@
                 })
                 .then(function (response) {
                     if (response.data.length > 0) {
+                        // Asignamos data para presentar el modal
                         me.dataPersonas = response.data;
                         me.isProcessing = false;
                     } else {
@@ -155,10 +156,11 @@
                 });
             },
             showDispositivosModal(persona) {
+                // Reinicio de variables
                 this.dispositivosInventario = [];
                 this.dispositivosPersona = [];
                 this.dispositivoModal = null;
-                //
+                // Asignación de variables
                 this.personaModal = persona;
                 this.showModal = true;
                 this.isModalProcessing = true;
@@ -181,8 +183,11 @@
                     headers: headers
                 })
                 .then(function (response) {
+                    // Se solicita la información de nuevo de personas con dispositivos para conservar la vista actualizada.
                     me.getPersonas();
+                    // Agregamos el arreglo del dispositivo al listado de dispositivos de la persona
                     me.dispositivosPersona.push(response.data.data.dispositivo_asignado);
+                    // Filtramos el arreglo del dispositivo vinculado para que no se muestre más en lista desplegable
                     me.dispositivosInventario = me.dispositivosInventario.filter(el => el.serial !== response.data.data.dispositivo_asignado.serial);
                 })
                 .then(function () {
@@ -226,9 +231,13 @@
                         headers: headers
                     })
                     .then(function (response) {
+                        // Se solicita la información de nuevo de personas con dispositivos para conservar la vista actualizada.
                         me.getPersonas();
+                        // Se agrega el arreglo del dispositivo desvinculado a la lista desplegable
                         me.dispositivosInventario.push(me.dispositivosPersona.find(el => el.serial == idDispositivo));
+                        // Se elimina el arreglo del dispositivo desvinculado del listado de dispositivos vinculados
                         me.dispositivosPersona = me.dispositivosPersona.filter(el => el.serial !== idDispositivo);
+                        //
                         me.isModalProcessing = false;
                         me.dispositivoModal = null;
                         //
@@ -265,6 +274,7 @@
                     headers: headers
                 })
                 .then(function (response) {
+                    // Se fuerza la data obtenida a convertirse en arreglos y se asigna a los arrreglos usados en el modal
                     let no_asignados = Object.values(response.data.data.no_asignados);
                     let asignados = Object.values(response.data.data.asignados);
                     if(no_asignados.length > 0) {
@@ -290,6 +300,7 @@
                 });
             },
             dispositivoYTipo ({ nombre, tipo_dispositivo }) {
+                //Se realiza concatenación para el label de la lista desplegable
                 return `${nombre} - (${tipo_dispositivo})`
             },
         },

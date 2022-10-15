@@ -48,11 +48,13 @@ class DispositivosApiController extends Controller
     */
     public function asignar(Request $request)
     {
-        if (Dispositivo::where('serial', $request->dispositivo['id'])->first()) {
+        //Validar si el dispositivo ya está asignado.
+        if (Dispositivo::where('serial', $request->dispositivo['serial'])->first()) {
             return response('El dispositivo ya se encuentra asignado.', 400);
         } else {
+            //Creamos nuevo modelo Dipositivo para asignación.
             $nuevoDispositivo = new Dispositivo;
-            $nuevoDispositivo->serial = $request->dispositivo['id'];
+            $nuevoDispositivo->serial = $request->dispositivo['serial'];
             $nuevoDispositivo->nombre = $request->dispositivo['nombre'];
             $nuevoDispositivo->tipo_dispositivo = $request->dispositivo['tipo_dispositivo'];
             $nuevoDispositivo->sistema_operativo = $request->dispositivo['sistema_operativo'];
@@ -75,6 +77,7 @@ class DispositivosApiController extends Controller
     */
     public function desvincular(Request $request)
     {
+        //Desvincular el Dispositivo por serial y id de persona
         $dispositivo = Dispositivo::where('serial', $request->dispositivos_id)->where('personas_id', $request->personas_id)->first()->delete();
         //
         $response = [
